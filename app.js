@@ -1,15 +1,20 @@
+require('dotenv').config()
 const createError = require('http-errors')
 const express = require('express')
 const path = require('path')
 const cookieParser = require('cookie-parser')
-const logger = require('morgan')
+const morgan = require('morgan')
 const cors = require('cors')
 
 const indexRouter = require('./routes/index')
 
-const app = express()
+// db connection
+require('./db')
 
-app.use(logger('dev'))
+const app = express()
+const isDev = process.env.NODE_ENV !== 'production'
+
+app.use(morgan(isDev ? 'dev' : 'combined'))
 app.use(cors())
 app.use(express.json())
 app.use(express.urlencoded({ extended: false }))

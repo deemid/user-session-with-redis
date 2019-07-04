@@ -1,0 +1,43 @@
+version: '3.7'
+
+services:
+
+  # Redis
+  redis:
+    image: redis
+    ports:
+      - "6379:6379"
+
+  # MongoDB
+  mongo:
+    image: mongo:latest
+    container_name: mongo
+    environment:
+      - MONGO_DATA_DIR=/data/db
+      - MONGO_LOG_DIR=/dev/null
+    volumes:
+      - ~/data/db:/data/db
+    ports:
+        - "27017:27017"
+    command: mongod --smallfiles --logpath=/dev/null # --quiet
+
+  # Back end API
+  api:
+    container_name: user-session-backend
+    # image: node:10.16.0
+    build: ./
+    command: npm start
+    working_dir: /usr/src/api
+    restart: on-failure
+    depends_on: ["mongo"]
+    environment:
+      REDIS_URL: redis://redis:6379
+      MONGODB_URI: mongodb://mongo:27017/user-session-redis
+      WAIT_HOSTS: mongo:27017
+    links:
+      - redis
+      - mongo
+    ports:
+      - "3000:3000"
+    volumes:
+      - ./:/usr/src/api

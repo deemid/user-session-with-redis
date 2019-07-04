@@ -15,7 +15,6 @@ const connectWithRetry = () => {
   mongoose
     .connect(process.env.MONGODB_URI, options)
     .then(() => {
-      console.log('MongoDB is connected')
       logger.info(`Connected to MongoDB URI: ${process.env.MONGODB_URI}`)
     })
     .catch(err => {
